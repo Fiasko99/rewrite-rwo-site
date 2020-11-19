@@ -2,6 +2,6 @@ module.exports = {
   HOST: "localhost",
   USER: "root",
   PASSWORD: "",
-  DB: "pdprojdb",
+  DB: "rwodb",
   dialect: "mysql"
 };

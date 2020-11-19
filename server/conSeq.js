@@ -5,6 +5,7 @@ function conSeq() {
   return new Sequelize(DBCONFIG.DB, DBCONFIG.USER, DBCONFIG.PASSWORD, {
     dialect: DBCONFIG.dialect,
     host: DBCONFIG.HOST,
+    logging: false
   });
 }
 
