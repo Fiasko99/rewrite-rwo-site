@@ -80,7 +80,7 @@ let userAvatarUpload = multer({storage: storageUsersAvatar})
 
 // Стэк запросов
 app.get('/', async (req, res) => {
-  res.redirect('http://localhost:8080/')
+  res.send('<img src="http://localhost:8080/static/user/avatars/test.jpg">')
 })
 
 // Запуск сервера
