@@ -1,29 +1,24 @@
-
 // Запуск приложения экспресса
 const express = require('express')
 const app = express()
 
-// Настройка сокетов через http сервер
-const http = require('http').Server(app)
-const socket = require('socket.io')
-const io = socket(http)
-
-const cors = require('cors')
-const bodyParser = require('body-parser');
-const path = require('path');
-const bcrypt = require('bcrypt');
+const serveStatic = require('serve-static')
+const bodyParser = require('body-parser')
+const path = require('path')
+const bcrypt = require('bcrypt')
 const multer = require('multer')
-const chalk = require('chalk');
+const chalk = require('chalk')
 const { v4 } = require('uuid')
-const history = require('connect-history-api-fallback');
+const cors = require('cors')
+const history = require('connect-history-api-fallback')
 
 // Кастомные импорты
-const conSeq = require("./conSeq");
+const conSeq = require("./conSeq")
 const usersModule = require('./modules/usersModule')
 
-let port = process.env.PORT || 3001;
+let PORT = process.env.PORT || 3001;
 
-if (process.env.PORT) {
+if (process.env.PORT || PORT) {
   // Корректная работа режима HTML5 history
   app.use(history());
 }
@@ -32,26 +27,25 @@ if (process.env.PORT) {
 var corsOptions = {
   origin: "http://localhost:8080"
 };
-
 app.use(cors(corsOptions))
 
 // Парсинг json - application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 // Парсинг запросов по типу: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Статика для выдачи по запросу
-const staticUserAvatars = path.join(__dirname, 'src', 'img', 'users-avatars')
-app.use('/static/user/avatars', express.static(staticUserAvatars))
+const staticUsersAvatars = path.join(__dirname, 'src', 'imgs', 'users')
+app.use(express.static(staticUsersAvatars))
 
 // Создание облака для аватарок
 const storageUsersAvatar = multer.diskStorage({
   destination: (req, file, cb) =>{
-      cb(null, staticUserAvatars);
+    cb(null, staticUsersAvatars)
   },
   filename: (req, file, cb) =>{
-      cb(null, v4()+"_"+file.originalname);
+    cb(null, v4()+"_"+file.originalname);
   }
 });
 
@@ -64,28 +58,27 @@ const sequelize = conSeq()
 // Стэк модулей для базы данных
 const Users = sequelize.define('users', usersModule)
 
-// Стэк сокетов
-io.on('connection', (socket) => {
-
-  console.log(`new user connect`)
-
-  socket.on('disconnect', () => {
-    console.log(`user disconnect`)
-  })
-
-})
-
 // Стэк облака с файлами
 let userAvatarUpload = multer({storage: storageUsersAvatar})
 
-// Стэк запросов
-app.get('/', async (req, res) => {
-  res.send('<img src="http://localhost:8080/static/user/avatars/test.jpg">')
-})
+const server = app
+  .use("/", serveStatic('../client/dist'))
+  .listen(PORT, async () => {
+    await sequelize.sync({ force: true })
+    console.log(chalk.green(`[server] connection DB `));
+    console.log(chalk.green(`[server] server start `))
+    console.log(chalk.bold.blueBright(`_`.repeat(48)))
+  });
 
-// Запуск сервера
-http.listen(port, async () => {
-  await sequelize.sync({ force: true })
-  console.log('Connection DB.');
-  console.log(`server start`)
+// Сокеты
+const io = require('socket.io')(server)
+
+// Стэк сокетов
+io.on('connection', socket => {
+  console.log(`new user connect`)
+  
+  socket.on('disconnect', () => {
+    console.log(`user disconnect`)
+  })
+  
 })

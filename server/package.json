@@ -2,10 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "nodemon index",
-    "start": "node index"
+    "test": "nodemon server",
+    "start": "node server"
   },
   "author": "",
   "license": "ISC",
