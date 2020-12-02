@@ -2,9 +2,25 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
+// import store from "../store/index";
+
 Vue.use(VueRouter)
 
+// const ifNotAuthenticated = (to, from, next) => {
+//   if (!store.getters.isAuthenticated) {
+//     next();
+//     return;
+//   }
+//   next("/choose");
+// };
 
+// const ifAuthenticated = (to, from, next) => {
+//   if (store.getters.isAuthenticated) {
+//     next();
+//     return;
+//   }
+//   next("/");
+// };
 
 const routes = [
   {
