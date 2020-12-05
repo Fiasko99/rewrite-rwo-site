@@ -13,14 +13,7 @@ export default {
     }
   },
   mounted() {
-    this.$socket.on("user-connected", (data) => {
-      console.log(data);
-      this.$socket.emit("users");
-    })
-    this.$socket.emit("users");
-    this.$socket.on("users", (data) => {
-      console.log("users", data);
-    })
+    
   }
 }
 </script>

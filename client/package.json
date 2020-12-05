@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.20.1",
     "core-js": "^3.6.5",
     "socket.io": "^3.0.3",
     "validate": "^5.1.0",
-    "vue": "^2.6.11",
+    "vue": "^2.6.12",
     "vue-router": "^3.2.0",
     "vue-socket.io": "^3.0.10",
     "vuelidate": "^0.7.6",

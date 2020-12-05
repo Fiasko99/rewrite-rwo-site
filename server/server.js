@@ -2,13 +2,13 @@
 const express = require('express')
 const app = express()
 const http = require('http').createServer(app)
-const socket = require('socket.io')
-const io = socket(http)
+// const socket = require('socket.io')
+// const io = socket(http)
 
-const serveStatic = require('serve-static')
+// const serveStatic = require('serve-static')
 const bodyParser = require('body-parser')
 const path = require('path')
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 const multer = require('multer')
 const chalk = require('chalk')
 const { v4 } = require('uuid')
@@ -55,7 +55,7 @@ const storageUsersAvatar = multer.diskStorage({
 let userAvatarUpload = multer({storage: storageUsersAvatar})
 
 // Создание соли для хеширования
-const salt = bcrypt.genSaltSync(10);
+// const salt = bcrypt.genSaltSync(10);
 
 // Покдлючение к базе данных
 const sequelize = conSeq()
@@ -69,12 +69,12 @@ app.get('/', (req, res) => {
 })
 
 // Стэк сокетов
-io.on('connection', (socket) => {
-  console.log(`new user connect`)
-  socket.on('disconnect', () => {
-    console.log(`new user disconnect`)
-  })
-})
+// io.on('connection', (socket) => {
+//   console.log(`new user connect`)
+//   socket.on('disconnect', () => {
+//     console.log(`new user disconnect`)
+//   })
+// })
 
 // Запуск сервера 
 http
