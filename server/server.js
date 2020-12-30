@@ -17,7 +17,12 @@ const history = require('connect-history-api-fallback')
 
 // Кастомные импорты
 const conSeq = require("./conSeq")
-const usersModule = require('./modules/usersModule')
+const {
+  compositions, rating,
+  age_limits, readers,
+  offers, writters,
+  sponsorship
+} = require('./modules/db')
 
 let PORT = process.env.PORT || 3001;
 
@@ -61,7 +66,15 @@ let userAvatarUpload = multer({storage: storageUsersAvatar})
 const sequelize = conSeq()
 
 // Стэк модулей для базы данных
-const Users = sequelize.define('users', usersModule)
+const Readers = sequelize.define('readers', readers)
+const Writters = sequelize.define('writters', writters)
+const Offers = sequelize.define('offers', offers)
+const Compositions = sequelize.define('compositions', compositions)
+const Rating = sequelize.define('rating', rating)
+const Sponsorship = sequelize.define('sponsorship', sponsorship)
+const AgeLimits = sequelize.define('age_limits', age_limits)
+
+associationsDB()
 
 // Запросы
 app.get('/', (req, res) => {
@@ -79,8 +92,81 @@ app.get('/', (req, res) => {
 // Запуск сервера 
 http
   .listen(PORT, async () => {
-    await sequelize.sync({ force: true })
+    await sequelize.sync({ alter: true })
     console.log(chalk.green(`[server] connection DB `));
     console.log(chalk.green(`[server] server start `))
     console.log(chalk.bold.blueBright(`_`.repeat(48)))
 });
+
+// Ассоциации Базы Данных
+function associationsDB() {
+  Compositions.belongsTo(AgeLimits,{
+    foreignKey: {
+      name: 'age_limit_id',
+      allowNull: false
+    },
+    as: 'age_limit'
+  })
+  AgeLimits.hasMany(Compositions, {
+    foreignKey: 'age_limit_id',
+    as: 'compositions'
+  })
+
+  Compositions.belongsTo(Writters, {
+    foreignKey: {
+      name: 'writter_id',
+      allowNull: false
+    },
+    as: 'writter'
+  })
+  Writters.hasMany(Compositions, {
+    foreignKey: 'writter_id',
+    as: 'compositions'
+  })
+
+  Sponsorship.belongsTo(Writters, {
+    foreignKey: {
+      name: 'writter_id',
+      allowNull: false
+    },
+    as: 'writter'
+  })
+  Writters.hasMany(Sponsorship, {
+    foreignKey: 'writter_id',
+    as: 'Sponsorship'
+  })
+  Sponsorship.belongsTo(Offers, {
+    foreignKey: {
+      name: 'offer_id',
+      allowNull: false
+    },
+    as: 'offers'
+  })
+  Offers.hasMany(Sponsorship, {
+    foreignKey: 'offer_id',
+    as: 'Sponsorship'
+  })
+
+  Rating.belongsTo(Readers, {
+    foreignKey: {
+      name: 'reader_id',
+      allowNull: false
+    },
+    as: 'readers'
+  })
+  Readers.hasMany(Rating, {
+    foreignKey: 'reader_id',
+    as: 'rating'
+  })
+  Rating.belongsTo(Compositions, {
+    foreignKey: {
+      name: 'composition_id',
+      allowNull: false
+    },
+    as: 'compositions'
+  })
+  Compositions.hasMany(Rating, {
+    foreignKey: 'composition_id',
+    as: 'rating'
+  })
+}
