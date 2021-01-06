@@ -76,7 +76,7 @@
         <b-button to="/help" class="border-0 disabled" variant="outline-secondary"><small>Забыли пароль?</small></b-button>
       </b-button-group>
     </b-form>
-
+  <input type="button" @click="test" value="test">
   </div>
 </template>
 
@@ -87,6 +87,7 @@ export default {
   mixins: [validationMixin],
   data() {
     return {
+      api: 'http://localhost:3001/',
       roles: [
         { value: null, text: "Выбрать..." },
         { value: "writer", text: "Писатель" },
@@ -116,31 +117,47 @@ export default {
     }
   },
   methods: {
+    test() {
+      try {
+        this.$http.post(
+          `${this.api}login/${this.form.login}`,
+           {
+             password: this.form.password,
+             role: this.form.role
+           }
+        )
+        .then(res => {
+          console.log(res.data)
+        })
+        // this.$router.push({path: '/home'})
+      } catch (error) {
+        alert(error)
+      }
+    },
     validateState(login) {
       const { $dirty, $error } = this.$v.form[login];
       return $dirty ? !$error : null;
-    },
-    resetForm() {
-      this.form = {
-        login: null,
-        password: null,
-        role: null
-      };
-
-      this.$nextTick(() => {
-        this.$v.$reset();
-      });
     },
     onSubmit() {
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      console.log({name: 'Home'})
-      this.$router.push({path: '/home'})
+      console.log(this.form)
+      try {
+        this.$http.get(
+          `${this.api}login/${this.form.login}`
+           
+        )
+        .then(res => {
+          console.log(res.data)
+        })
+        // this.$router.push({path: '/home'})
+      } catch (error) {
+        alert(error)
+      }
     }
   },
-
 };
 </script>
 

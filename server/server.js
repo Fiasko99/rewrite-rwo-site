@@ -81,6 +81,35 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../', 'client', 'dist', 'index.html'))
 })
 
+app.post('/login/:user', async (req, res) => {
+  
+  if (
+    typeof req.params.user !== 'undefined' &&
+    req.body.password && 
+    req.body.role
+  ) {
+    let login = req.params.user
+    let password = req.body.password
+    let role = req.body.role
+    let result = false
+    if (role === 'writer') {
+      result = await validateWriter(login, password)
+    } else if (role === 'offer') {
+      result = await validateOffer(login, password)
+    } else if (role === 'reader') {
+      result = await validateReader(login, password)
+    }
+    console.log(result)
+    if (result) {
+      res.send('success')
+    } else {
+      res.send('wrong data')
+    }
+  } else {
+    res.send('fail')
+  }
+})
+
 // Стэк сокетов
 // io.on('connection', (socket) => {
 //   console.log(`new user connect`)
@@ -169,4 +198,14 @@ function associationsDB() {
     foreignKey: 'composition_id',
     as: 'rating'
   })
+}
+
+async function validateWriter(login, password) {
+  let user = await Writters.findOne({
+    where: {
+      login_writer: login,
+      password_writer: password
+    }
+  })
+  return user
 }
